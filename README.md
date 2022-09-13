@@ -1,16 +1,39 @@
-# GeomInertiaEstimator
-a nonlinear Kalman Filter based ROS package that allows to estimate inertia and geometric parameters of multirotors in-flight and re-estimates them online
+# quadrotor-vdm-aided-ins
+This is a modified version of the [GeomInertiaEstimator](https://github.com/arplaboratory/GeomInertiaEstimator) ROS package.
+It is repurposed for quadrotor vehicle dynamic model (VDM)-aided inertial navigation system (INS).
 
-By combining rotor speed measurements with data from an Inertial Measurement Unit (IMU) and any kind of pose sensor, an Unscented Kalman Filter (UKF) or Extended Kalman Filter (EKF) estimates inertia parameters (mass, moment of inertia, position of center of mass) and geometric parameters (position of IMU, position of pose sensor).
+This algorithm only requires rotor speed control inputs and 
+measurements from inertial measurement unit (IMU) & barometric altimeter sensors.
+Unfortunately, this results in position drift in the $x$ & $y$-axes.
+However, we can still estimate the velocity by incorporating drag force into the VDM.
 
-We facilitate the setup process and demonstrate the performance of the estimator by providing an example bag file containing the data from one of our experiments (_config/lissajous_trajectory.bag_). Furthermore, we provide a layout file (_config/PlotJuggler_Layout.xml_) for [PlotJuggler](http://wiki.ros.org/plotjuggler) to plot and analyse the estimates more easily.
+The _Jupyter Notebook_ explaining this nonlinear observability analysis can be accessed in [PyNOA](https://github.com/BagaskaraPutra/PyNOA)
 
-  <img src="https://raw.githubusercontent.com/arplaboratory/GeomInertiaEstimator/master/config/Multirotor.svg?sanitize=true" width="100%" height="140">
-  
-<!--video -->
+We also add an additional dataset `geomInertiaEstimator_UKF_results.bag`. 
+This dataset is the UKF estimation result of the original [GeomInertiaEstimator](https://github.com/arplaboratory/GeomInertiaEstimator) package.
+This can be used as ground truth velocity data as the original dataset doesn't contain them.
 
 ## Reference
-Please cite the following publication in case you are using the package in an academic context:
+The paper corresponding to this source code is still in progress and aims to only analyze the nonlinear observability of quadrotor VDM-aided inertial navigation.
+
+However, if you intend to use this package for academic context, please cite the original source papers:
+
+1. The quadrotor model for VDM-aided inertial navigation is adopted from:
+
+N. Y. Ko, I. H. Choi, G. Song and W. Youn, "**Three-Dimensional Dynamic-Model-Aided Navigation of Multirotor Unmanned Aerial Vehicles,**" _in IEEE Access, vol. 7, pp. 170715-170732_, 2019, doi: 10.1109/ACCESS.2019.2955756.
+```
+@article{8911410,  
+author={Ko, Nak Yong and Choi, In Ho and Song, Gyeongsub and Youn, Wonkeun},  
+journal={IEEE Access},   
+title={Three-Dimensional Dynamic-Model-Aided Navigation of Multirotor Unmanned Aerial Vehicles}, 
+year={2019},  
+volume={7},  
+number={},  
+pages={170715-170732},  
+doi={10.1109/ACCESS.2019.2955756}}
+```
+
+2. The state estimation algorithm, source code, and dataset are adopted from:
 
 Wüest V, Kumar V, Loianno G. "**Online Estimation of Geometric and Inertia Parameters for Multirotor Aerial Vehicles**." _2019 IEEE International Conference on Robotics and Automation (ICRA)_. IEEE, 2019.
 ```
@@ -23,14 +46,6 @@ Wüest V, Kumar V, Loianno G. "**Online Estimation of Geometric and Inertia Para
   organization={IEEE}
 }
 ```
-In the publication you can find details about:
-* parameter definitions
-* derivations of models
-  * system dynamics
-  * measurements
-* filter implementation on _SO_(3)
-* nonlinear observability analysis
-* experimental results
 
 ## License
 Please be aware that this code was originally implemented for research purposes and may be subject to changes and any fitness for a particular purpose is disclaimed.
@@ -51,30 +66,51 @@ To inquire about commercial licenses, please contact [Valentin Wüest](mailto:va
 ```
 
 ## Installation
-Clone the _GeomInertiaEstimator_ repo into your catkin workspace:
+Clone the _quadrotor-vdm-aided-ins_ repo into your catkin workspace:
 ```
 cd ~/catkin_ws/src/
-git clone git@github.com:arplaboratory/GeomInertiaEstimator.git
+git clone git@github.com:BagaskaraPutra/quadrotor-vdm-aided-ins.git
 ```
 
-Build the _GeomInertiaEstimator_ package:
+Build the _quadrotor-vdm-aided-ins_ package:
 ```
-catkin_make --pkg geom_inertia_estimator --cmake-args -DCMAKE_BUILD_TYPE=Release
+catkin_make --pkg quadrotor_vdm_aided_ins --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 In case an error message appears, try running the last step again.
 
 ## Usage
-To use the estimator, first enter the parameters of your multirotor in _config/quad_params.yaml_.
+To use the estimator, first enter the parameters of your multirotor in _config/vdm_ins_quad_params.yaml_.
 
 Make sure that the three topics _IMU_, _pose_ and _motor rpm_ are published. 
 
-Then, remap these topics in _launch/estimator.launch_ and launch the estimator by executing:
+Then, remap these topics in _launch/vdm_ins.launch_ and launch the estimator by executing:
 ```
-roslaunch geom_inertia_estimator estimator.launch
+roslaunch quadrotor_vdm_aided_ins vdm_ins.launch
 ```
 
-## Example
+## Offline Plotting Example
+Open a new terminal window, execute the **vdm_ins** launch file:
+```
+roslaunch quadrotor_vdm_aided_ins vdm_ins.launch
+```
+
+Open a second terminal tab and play the experiment bag file:
+```
+roscd quadrotor_vdm_aided_ins/
+rosbag play config/geomInertiaEstimator_UKF_results.bag --pause
+```
+
+In the third terminal tab, start recording the topics:
+```
+rosbag record -a
+```
+
+Quickly go back to the second terminal tab and press the _SPACEBAR_ to unpause the bag file.
+
+After the bag file has finished playing, go to the third terminal tab and `Ctrl+C` to stop recording.
+
+## Online Plotting Example
 Firstly, install _PlotJuggler_ if you have not already:
 ```
 sudo apt-get install ros-$ROS_DISTRO-plotjuggler
@@ -87,19 +123,19 @@ roscore
 
 In a second terminal window, start the estimator:
 ```
-roslaunch geom_inertia_estimator estimator.launch
+roslaunch quadrotor_vdm_aided_ins vdm_ins.launch
 ```
 
 In a third one, play the example experiment bag file:
 ```
-roscd geom_inertia_estimator/
-rosbag play config/lissajous_trajectory.bag --pause
+roscd quadrotor_vdm_aided_ins/
+rosbag play config/geomInertiaEstimator_UKF_results.bag --pause
 ```
 
 You can now plot the estimates using plotjuggler by executing this command in a fourth window:
 ```
-roscd geom_inertia_estimator/
-rosrun plotjuggler PlotJuggler -l config/PlotJuggler_Layout.xml
+roscd quadrotor_vdm_aided_ins/
+rosrun plotjuggler plotJuggler -l config/PlotJuggler_Layout.xml
 ```
 When prompted, hit "_Yes (Both Layout and Streaming)_", "_OK_", and "_Create empty placeholders_". You can then unpause the bag play by clicking on the rosbag terminal window and hitting _SPACEBAR_. Now, enjoy following the plots being drawn!
 
