@@ -1,0 +1,17 @@
+<launch>
+    <arg name="use_EKF" default="0"/>
+    <arg name="model" default="quadrotor"/>
+
+    <group ns="$(arg model)">
+        <node pkg="quadrotor_vdm_aided_ins"
+            type="quadrotor_vdm_aided_ins"
+            name="quadrotor_vdm_aided_ins"
+            output="screen">
+            <rosparam file="$(find quadrotor_vdm_aided_ins)/config/quad_params_vdm_ins.yaml"/>
+            <param name="useEKF" value="$(arg use_EKF)"/>
+            <remap from="~pose" to="pose"/>
+            <remap from="~imu"  to="imu"/>
+            <remap from="~rpm"  to="rpm"/>
+        </node>
+    </group>
+</launch>

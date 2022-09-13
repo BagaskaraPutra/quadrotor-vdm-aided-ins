@@ -1,0 +1,108 @@
+# measurement noise IMU in its own frame
+RImu:
+    Omega:  {x: 3.0e-2, y: 3.0e-2, z: 3.0e-2}
+    a:      {x: 4.84, y: 4.84, z: 4.84}
+
+# process model uncertainty
+# Qx: [7.5e-3, 7.5e-3, 7.5e-3,            # q
+#      1.0e-3, 1.0e-3, 1.0e-3,            # r
+#      1.0e-2, 1.0e-2, 1.0e-2,            # v
+Qx: [7.5e-3, 7.5e-3, 7.5e-3,    # q
+     1.0e-3, 1.0e-3, 1.0e-3,    # r
+     1.0e-2, 1.0e-2, 1.0e-2,    # v
+     7.5e-1, 7.5e-1, 7.5e-1]    # Omega
+    #  2.50e-7,                   # m
+    #  5.0e-11, 5.0e-11, 5.0e-11, # I
+    #  1.0e-11]                   # lambda_l
+    #  1.0, 1.0, 1.0, 1.0,    # k_f
+    #  1.0, 1.0, 1.0, 1.0]    # k_m
+    #  4.0e-8, 4.0e-8, 4.0e-8,    # r_BM
+    #  4.0e-8, 4.0e-8, 4.0e-8,    # r_BP
+    #  4.0e-8, 4.0e-8,            # r_BI
+    #  1.0e-4, 1.0e-4, 1.0e-4,    # b_a
+    #  1.0e-6, 1.0e-6, 1.0e-6]    # b_Omega
+
+# initialization state variables
+x0:
+    # r_WB: {x: 0.089626967907, y: 0.0204863362014, z: -1.26333701611}
+    r_WB: {x: 0.089626967907, y: -0.0204863362014, z: 1.26333701611}
+    # m:    0.369
+    # I:    {x: 8.4238e-04, y: 8.4238e-04, z: 8.4238e-04}
+    lambda_l: 3.0e-6 #1.0e-6 #5.0e-6 #6.0e-6 #7.5e-6 #1.7e-6 #1.2e-5 #1.1e-5 #1.0e-5 #1.0e-6 #1.0e-9 #2.0e-10 #FAIL: 1.0e-3 1.0e-4 1.4e-5 1.5e-5 2.0e-5 9.0e-6
+    k_f_1: 4.179e-9
+    k_f_2: 4.179e-9
+    k_f_3: 4.179e-9
+    k_f_4: 4.179e-9
+    k_m_1: 3.97005e-11
+    k_m_2: -3.97005e-11
+    k_m_3: 3.97005e-11
+    k_m_4: -3.97005e-11
+    r_BM: {x: 0.0, y: 0.0, z: 0.0}
+    r_BP: {x: 0.0, y: 0.0, z: 0.0}
+    r_BI: {x: 0.0, y: 0.0}
+    b_a: {x: 0.0, y: 0.0, z: 0.0}
+    b_Omega: {x: 0.0, y: 0.0, z: 0.0}
+    
+    m:    0.2463
+    I:    {x: 0.623e-3, y: 0.678e-3, z: 1.076e-3}
+    # r_BM: {x: 3.0e-3, y: -0.5e-3, z: 25.0e-3}
+    # r_BP: {x: 42.42e-3, y: 16.38e-3, z: 0.0e-3}
+    # r_BI: {x: 42.42e-3, y: 16.38e-3}
+    # b_a: {x: 0.237247511744, y: -0.478056848049, z: 0.809536933899}
+    # b_Omega: {x: -0.0512206554413, y: 0.0378677658737, z: -0.0589476041496}
+
+# initialization state covariance
+P0:
+    v:       {x: 5.0, y: 5.0, z: 5.0} #{x: 1.0e-2, y: 1.0e-2, z: 1.0e-2} #
+    # m:       6.0e-2
+    # I:       {x: 3.9e-7, y: 3.9e-7, z: 3.9e-7}
+    # lambda_l: 1.0e-7
+    # k_f_1: 1.0e-7
+    # k_f_2: 1.0e-7
+    # k_f_3: 1.0e-7
+    # k_f_4: 1.0e-7
+    # k_m_1: 1.0e-7
+    # k_m_2: 1.0e-7
+    # k_m_3: 1.0e-7
+    # k_m_4: 1.0e-7
+    # r_BM:    {x: 2.5e-3, y: 2.5e-3, z: 2.5e-3}
+    # r_BP:    {x: 2.5e-3, y: 2.5e-3, z: 2.5e-3}
+    # r_BI:    {x: 2.5e-3, y: 2.5e-3}
+    # b_a:     {x: 4.0, y: 4.0, z: 4.0}
+    # b_Omega: {x: 1.0, y: 1.0, z: 1.0}
+
+# UKF tuning parameters
+UKF:
+    alpha: 0.4 
+    beta:  2.0
+    kappa: 0.0
+
+# attitude pose sensor - 3x3 rotation matrix (row major)
+R_BP: [ 1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -1.0]
+
+# attitude IMU - 3x3 rotation matrix (row major)
+R_BI: [ 1.0, 0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, -1.0]
+
+# rotor properties
+multirotor:
+    rotor1: # have only as many "rotor(i)" as there are on the multirotor
+        kf: 4.179e-9 # rotor thrust coefficient - Unit: [N/rpm^2]
+        km: 3.97005e-11 # rotor drag moment coefficient - positive if counter-clockwise, negative if clockwise
+        R: [ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0] # rotor attitude - row major matrix
+        t: [ 0.071, 0.08, 0.0] # rotor position
+    rotor2:
+        kf: 4.179e-9
+        km: -3.97005e-11
+        R: [ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        t: [ -0.071, 0.08, 0.0]
+    rotor3:
+        kf: 4.179e-9
+        km: 3.97005e-11
+        R: [ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        t: [ -0.071, -0.08, 0.0]
+    rotor4:
+        kf: 4.179e-9
+        km: -3.97005e-11
+        R: [ 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        t: [ 0.071, -0.08, 0.0]
+
