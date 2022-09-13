@@ -13,7 +13,7 @@
 
 
 cmake_minimum_required(VERSION 2.8.12)
-project(geom_inertia_estimator)
+project(quadrotor_vdm_aided_ins)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
@@ -31,6 +31,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 include_directories(
     include/geom_inertia_estimator
+    include/quadrotor_vdm_aided_ins
     ${catkin_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
 )
@@ -55,38 +56,47 @@ catkin_package(
 )
 
 set(ESTIMATOR_SOURCE_FILES
-    src/geom_inertia_estimator.cpp
+    # src/geom_inertia_estimator.cpp
+    src/vdm_ins.cpp
     src/v_tools.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/calc_EKF_F_optimized.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rt_nonfinite.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetInf.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetNaN.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/sign.cpp
-    include/geom_inertia_estimator/calc_EKF_F_optimized/sqrt.cpp
-    include/geom_inertia_estimator/calc_EKF_H_imu_optimized_simple/calc_EKF_H_imu_optimized_simple.cpp
-    include/geom_inertia_estimator/calc_EKF_H_odom_optimized_simple/calc_EKF_H_odom_optimized_simple.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/calc_EKF_F_optimized.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rt_nonfinite.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetInf.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetNaN.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/sign.cpp
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/sqrt.cpp
+    # include/geom_inertia_estimator/calc_EKF_H_imu_optimized_simple/calc_EKF_H_imu_optimized_simple.cpp
+    # include/geom_inertia_estimator/calc_EKF_H_odom_optimized_simple/calc_EKF_H_odom_optimized_simple.cpp
 )
 
 
 set(ESTIMATOR_HEADER_FILES
-    include/geom_inertia_estimator/geom_inertia_estimator.h
-    include/geom_inertia_estimator/v_tools.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/calc_EKF_F_optimized.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rt_nonfinite.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetInf.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetNaN.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/sign.h
-    include/geom_inertia_estimator/calc_EKF_F_optimized/sqrt.h
-    include/geom_inertia_estimator/calc_EKF_H_imu_optimized_simple/calc_EKF_H_imu_optimized_simple.h
-    include/geom_inertia_estimator/calc_EKF_H_odom_optimized_simple/calc_EKF_H_odom_optimized_simple.h
+    # include/geom_inertia_estimator/geom_inertia_estimator.h
+    # include/geom_inertia_estimator/v_tools.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/calc_EKF_F_optimized.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rt_nonfinite.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetInf.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/rtGetNaN.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/sign.h
+    # include/geom_inertia_estimator/calc_EKF_F_optimized/sqrt.h
+    # include/geom_inertia_estimator/calc_EKF_H_imu_optimized_simple/calc_EKF_H_imu_optimized_simple.h
+    # include/geom_inertia_estimator/calc_EKF_H_odom_optimized_simple/calc_EKF_H_odom_optimized_simple.h
+    include/quadrotor_vdm_aided_ins/vdm_ins.h
+    include/quadrotor_vdm_aided_ins/v_tools.h
 )
 
 
 ###########
 ## Build ##
 ###########
-add_library(geom_inertia_estimator_lib ${ESTIMATOR_SOURCE_FILES})
-target_link_libraries(geom_inertia_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})
-add_executable(geom_inertia_estimator  src/geom_inertia_estimator_node.cpp)
-add_dependencies(geom_inertia_estimator ${catkin_EXPORTED_TARGETS} )
-target_link_libraries(geom_inertia_estimator geom_inertia_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})
+# add_library(geom_inertia_estimator_lib ${ESTIMATOR_SOURCE_FILES})
+# target_link_libraries(geom_inertia_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})
+# add_executable(geom_inertia_estimator  src/geom_inertia_estimator_node.cpp)
+# add_dependencies(geom_inertia_estimator ${catkin_EXPORTED_TARGETS} )
+# target_link_libraries(geom_inertia_estimator geom_inertia_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})
+
+add_library(state_estimator_lib ${ESTIMATOR_SOURCE_FILES})
+target_link_libraries(state_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})
+add_executable(quadrotor_vdm_aided_ins  src/vdm_ins_node.cpp)
+add_dependencies(quadrotor_vdm_aided_ins ${catkin_EXPORTED_TARGETS} )
+target_link_libraries(quadrotor_vdm_aided_ins state_estimator_lib ${catkin_LIBRARIES} ${EIGEN_LIBS})

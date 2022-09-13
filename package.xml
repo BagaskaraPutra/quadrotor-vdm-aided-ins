@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>geom_inertia_estimator</name>
+    <name>quadrotor_vdm_aided_ins</name>
     <version>0.0.1</version>
-    <description>Inertia Estimator for Multirotors</description>
+    <description>Quadrotor Vehicle Dynamic Model (VDM)-aided Inertial Navigation System (INS)</description>
 
-    <maintainer email="valentinwueest@gmail.com">Valentin Wueest</maintainer>
+    <maintainer email="primastyaputra@gmail.com">Bagaskara Primastya Putra</maintainer>
 
     <license>GPL-3.0</license>
 
-    <author>Valentin Wueest</author>
+    <author>Bagaskara Primastya Putra</author>
 
     <buildtool_depend>catkin</buildtool_depend>
     <build_depend>message_generation</build_depend>
